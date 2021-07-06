@@ -12,7 +12,7 @@ DRONE_BUILD_NUMBER=$6
 
 scripts/wait_for_emulator.sh
 ./gradlew jacocoTestGplayDebugUnitTestReport 
-status=$?
+status=$(( $status | $? ))
 
 if [ $status -eq 0 ]; then
     scripts/deleteOutdatedComments.sh "master" "Unit" $DRONE_PULL_REQUEST $GIT_USERNAME $GIT_TOKEN
@@ -23,7 +23,7 @@ fi
 ./gradlew installGplayDebugAndroidTest
 scripts/wait_for_server.sh "server"
 ./gradlew createGplayDebugCoverageReport -Pcoverage -Pandroid.testInstrumentationRunnerArguments.notAnnotation=com.owncloud.android.utils.ScreenshotTest
-status=$?
+status=$(( $status | $? ))
 
 if [ $status -eq 0 ]; then
     scripts/deleteOutdatedComments.sh "master" "IT" $DRONE_PULL_REQUEST $GIT_USERNAME $GIT_TOKEN
@@ -32,7 +32,7 @@ else
 fi
 
 ./gradlew combinedTestReport
-status=$?
+status=$(( $status | $? ))
 
 curl -o codecov.sh https://codecov.io/bash
 bash ./codecov.sh -t fc506ba4-33c3-43e4-a760-aada38c24fd5
